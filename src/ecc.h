@@ -1,28 +1,11 @@
 #ifndef __ECC_H_
 #define __ECC_H_
-#include <algorithm> 
-#include <iostream> // For prints
-using std::min;
-using std::max;
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <memory.h>
 
-#define likely(x) __builtin_expect(!!(x),1)
-#define unlikely(x) __builtin_expect((x),0)
-#define barrier() __asm__ __volatile__("": : :"memory")
-
-#if (!BERSIM)
-#define ecc_assert(cond,msg,a...)                                                              \
-        do {                                                                                    \
-                if (unlikely(!(cond))) {                                \
-                        printf("assertion failed at file %s, function %s, line %d - ",  \
-                                    __FILE__, __FUNCTION__, __LINE__);          \
-                        printf(msg, ##a);                                                       \
-                        printf("\n");                                                           \
-                        exit(1);                                                                        \
-                }                                                                               \
-        } while (0)
-#else
-#define ecc_assert(cond,msg,a...)   
-#endif
+#define ecc_assert(cond, msg, a, ...) assert((cond))
 
 //static __inline void *ecc_malloc_err(int size, char* file, int line)
 // Never put non-static function definitions in a header file! either make the function
@@ -130,14 +113,14 @@ static __inline int sum_int_mtx(int_mtx_t *mtx)
 
 
 
-static inline void init_double_mtx(double_mtx_t *mtx, int m, int n)
+static __inline void init_double_mtx(double_mtx_t *mtx, int m, int n)
 {
   mtx->n = n;
   mtx->m = m;
   mtx->data = (double*)ecc_malloc(sizeof(double)*n*m);
 }
 
-static inline void init_int_mtx(int_mtx_t *mtx, int m, int n)
+static __inline void init_int_mtx(int_mtx_t *mtx, int m, int n)
 {
   mtx->n = n;
   mtx->m = m;
@@ -145,7 +128,7 @@ static inline void init_int_mtx(int_mtx_t *mtx, int m, int n)
   memset(mtx->data, 0, sizeof(int)*n*m); 
 }
 
-static inline void init_int_mtx_from_imtx(int_mtx_t *mtx, int_mtx_t *imtx)
+static __inline void init_int_mtx_from_imtx(int_mtx_t *mtx, int_mtx_t *imtx)
 {
   mtx->n = imtx->n;
   mtx->m = imtx->m;
