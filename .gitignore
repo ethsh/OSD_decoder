@@ -50,3 +50,16 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Visual Studio project files
+*.sln
+*.suo
+*.db
+*.opendb
+*.ipch
+*.txt
+*.log
+*.tlog
+*.vcxproj
+*.filters
+
