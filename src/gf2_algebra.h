@@ -51,7 +51,7 @@ void malloc_and_init_gf2_bit_mtx(gf2_bit_mtx_t **mtx, int m, int n);
 void init_gf2_bit_mtx(gf2_bit_mtx_t *mtx, int m, int n);
 void free_gf2_bit_mtx(gf2_bit_mtx_t *x);
 __inline char gf2_bit_mtx_get_element(gf2_bit_mtx_t *mtx, int line_idx, int col_idx);
-__inline char gf2_bit_mtx_set_element(gf2_bit_mtx_t *mtx, int line_idx, int col_idx, char in_data);
+__inline void gf2_bit_mtx_set_element(gf2_bit_mtx_t *mtx, int line_idx, int col_idx, char in_data);
 void copy_gf2_bit_mtx(gf2_bit_mtx_t* src, gf2_bit_mtx_t* dst);
 void int_mtx_2_gf2_bit_mtx(int_mtx_t* src, gf2_bit_mtx_t** dst);
 void switch_gf2_bit_mtx_rows(gf2_bit_mtx_t* mtx, int row_a, int row_b);
@@ -66,7 +66,7 @@ void malloc_and_init_gf2_byte_mtx(gf2_byte_mtx_t **mtx, int m, int n);
 void init_gf2_byte_mtx(gf2_byte_mtx_t *mtx, int m, int n);
 void free_gf2_byte_mtx(gf2_byte_mtx_t *x);
 __inline char gf2_byte_mtx_get_element(gf2_byte_mtx_t *mtx, int line_idx, int col_idx);
-__inline char gf2_byte_mtx_set_element(gf2_byte_mtx_t *mtx, int line_idx, int col_idx, char in_data);
+__inline void gf2_byte_mtx_set_element(gf2_byte_mtx_t *mtx, int line_idx, int col_idx, char in_data);
 void copy_gf2_byte_mtx(gf2_byte_mtx_t* src, gf2_byte_mtx_t* dst);
 void int_mtx_2_gf2_byte_mtx(int_mtx_t* src, gf2_byte_mtx_t** dst);
 void switch_gf2_byte_mtx_rows(gf2_byte_mtx_t* mtx, int row_a, int row_b);
@@ -102,7 +102,7 @@ __inline char gf2_bit_mtx_get_element(gf2_bit_mtx_t *mtx, int line_idx, int col_
 	return gf2_bit_vec_get_element(mtx->data[line_idx], col_idx);
 	//return mtx->data[line_idx * mtx->n + col_idx];
 }
-__inline char gf2_bit_mtx_set_element(gf2_bit_mtx_t *mtx, int line_idx, int col_idx, char in_data) {
+__inline void gf2_bit_mtx_set_element(gf2_bit_mtx_t *mtx, int line_idx, int col_idx, char in_data) {
 	ecc_assert((line_idx >= 0) && (line_idx <= mtx->m), "Line exceeds allowed (%d vs %d)\n", mtx->m, line_idx);
 	ecc_assert((col_idx >= 0) && (col_idx <= mtx->n), "Col exceeds allowed (%d vs %d)\n", mtx->n, col_idx);
 	//mtx->data[line_idx * mtx->n + col_idx] = in_data;
@@ -117,7 +117,7 @@ __inline char gf2_byte_mtx_get_element(gf2_byte_mtx_t *mtx, int line_idx, int co
 	return mtx->data[line_idx * mtx->n + col_idx];
 }
 
-__inline char gf2_byte_mtx_set_element(gf2_byte_mtx_t *mtx, int line_idx, int col_idx, char in_data) {
+__inline void gf2_byte_mtx_set_element(gf2_byte_mtx_t *mtx, int line_idx, int col_idx, char in_data) {
 	ecc_assert((line_idx >= 0) && (line_idx <= mtx->m), "Line exceeds allowed (%d vs %d)\n", mtx->m, line_idx);
 	ecc_assert((col_idx >= 0) && (col_idx <= mtx->n), "Col exceeds allowed (%d vs %d)\n", mtx->n, col_idx);
 	mtx->data[line_idx * mtx->n + col_idx] = in_data;
