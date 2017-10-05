@@ -50,8 +50,8 @@ void osd_wrap_decode_func(real_vec_t *channel_word, gf2_vec_t *decoded_word) {
 	OSD_decode(osd_decoder, channel_word, osd_order, decoded_word);
 }
 
-double_mtx_t * calc_ber(simulation_params_t *simulation_params);
 char* get_poly_for_n_k(int n, int k);
+double_mtx_t * calc_ber(simulation_params_t *simulation_params);
 
 int main(int argc, char ** argv) {
 	if (argc < 9) {
@@ -247,7 +247,8 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 	free_real_vec(data_uc);
 
 	// Printing the BER matrix
+	printf("Resutls are in the format of:\n|SNR|\n|BER|\n|WER|\n|Time per word|\n|Time in gaussian elimination per word|\n|Uncoded BER|\n");
 	print_double_mtx(ber);
-	dump_double_mtx_text(ber, "BER.txt");
+	dump_double_mtx_text(ber, "Simulation Results.txt");
 	return ber;
 }
