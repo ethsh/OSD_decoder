@@ -27,7 +27,6 @@
 static void *ecc_malloc_err(int size, const char* file, int line)
 {
         void *p;
-	//printf("size is %d", size);
         ecc_assert(size != 0,"Size is equall 0, file %s, line %d\n", file, line);
         p = malloc(size);
         ecc_assert(p != NULL, "unable to allocate %d bytes, out of memory, file %s, line %d\n", size, file, line);

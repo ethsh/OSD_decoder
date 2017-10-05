@@ -210,13 +210,9 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 			init_measured_data(symb, data, start_EBN0_db + EBN0_delta*i, ((double)(G->m) / (double)G->n)); // Transmission of the codeword
 			init_measured_data(info, data_uc, start_EBN0_db + EBN0_delta*i, 1.0); // Transmission of only the information bits
 
-			// print_gf2vec(symb);
 			t_clk = clock();
-			// time(&t_clk);
 			simulation_params->decode_func(data, dec_symb);
 			sum_clk += (clock() - t_clk);
-			// print_gf2vec(dec_symb);
-			//printf("iter num %d - after decode\n", iter);
 
 			// Now counting the number of error bits
 			// coded data
