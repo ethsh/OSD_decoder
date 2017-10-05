@@ -4,8 +4,22 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <memory.h>
+#include <math.h>
 
+#ifdef _WIN32
 #define ecc_assert(cond, msg, a, ...) assert((cond))
+#else
+#define ecc_assert(cond,msg,a...)							\
+        do {										\
+                if (!(cond)) {								\
+                        printf("assertion failed at file %s, function %s, line %d - ",	\
+                                    __FILE__, __FUNCTION__, __LINE__);			\
+                        printf(msg, ##a);						\
+                        printf("\n");							\
+                        exit(1);							\
+                }									\
+        } while (0)
+#endif
 
 //static __inline void *ecc_malloc_err(int size, char* file, int line)
 // Never put non-static function definitions in a header file! either make the function
@@ -13,6 +27,7 @@
 static void *ecc_malloc_err(int size, const char* file, int line)
 {
         void *p;
+	//printf("size is %d", size);
         ecc_assert(size != 0,"Size is equall 0, file %s, line %d\n", file, line);
         p = malloc(size);
         ecc_assert(p != NULL, "unable to allocate %d bytes, out of memory, file %s, line %d\n", size, file, line);
