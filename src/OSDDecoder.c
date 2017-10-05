@@ -1,5 +1,6 @@
 #include <string.h>
 #include <math.h>
+#include <time.h>
 #include "OSDDecoder.h"
 
 typedef struct error_patterns_s{
@@ -287,10 +288,14 @@ void calc_confidence_permutaion(osd_decoder_t* osd_decoder) {
 
 
 void gaussian_eliminate(osd_decoder_t* osd_decoder) {
-	//copy_gf2_bit_mtx(osd_decoder->G, osd_decoder->G_perm);
+	extern clock_t time_in_gussian_elimination;
+	clock_t temp_time_in_gussian_elimination;
+	temp_time_in_gussian_elimination = clock();
+
 	copy_gf2_byte_mtx(osd_decoder->G, osd_decoder->G_perm);
-	//gf2_bit_mtx_gaussian_elimination(osd_decoder->G_perm, osd_decoder->perm1, osd_decoder->col_perms);
 	gf2_byte_mtx_gaussian_elimination(osd_decoder->G_perm, osd_decoder->perm1, osd_decoder->col_perms);
+
+	time_in_gussian_elimination += (clock() - temp_time_in_gussian_elimination);
 }
 
 void create_combined_perm(int_vec_t* perm1, col_perms_t* col_perms, int_vec_t* total_perm) {

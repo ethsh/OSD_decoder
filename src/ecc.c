@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <time.h>
 #include "ecc.h"
 
@@ -1301,7 +1300,7 @@ int_mtx_t *create_permutation(int n, int nr_perm, int *perm, int perm_list_lengt
 	int i, j, lim, N, rand_pos, pos;
   
 
-	ecc_assert(max(2*nr_perm+1, 10) < perm_list_length, "Error with perm_list_length, %d vs. %d\n", max(2*nr_perm+1, 10), perm_list_length);
+	ecc_assert(fmax(2*nr_perm+1, 10) < perm_list_length, "Error with perm_list_length, %d vs. %d\n", fmax(2*nr_perm+1, 10), perm_list_length);
 	N = perm_list_length;
 	S = (int_mtx_t*)ecc_malloc(sizeof(int_mtx_t)*N); // This is the array of permutations (the Automorphism group)
 

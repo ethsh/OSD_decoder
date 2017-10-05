@@ -35,17 +35,14 @@ static void dump_double_mtx_text(double_mtx_t *mtx, char *fname)
 		}
 		fprintf(fp, "|\n");
 	}
-	
-	//fwrite(&type, sizeof(int), 1, fp);
-	//fwrite(&mtx->m, sizeof(int), 1, fp);
-	//fwrite(&mtx->n, sizeof(int), 1, fp);
-	//fwrite(mtx->data, sizeof(double), mtx->m*mtx->n, fp);
+
 	fclose(fp);
 }
 
 
 osd_decoder_t* osd_decoder = NULL;
 int osd_order = -1;
+clock_t time_in_gussian_elimination = 0;
 
 void osd_wrap_decode_func(real_vec_t *channel_word, gf2_vec_t *decoded_word) {
 	extern osd_decoder_t* osd_decoder;
@@ -53,8 +50,8 @@ void osd_wrap_decode_func(real_vec_t *channel_word, gf2_vec_t *decoded_word) {
 	OSD_decode(osd_decoder, channel_word, osd_order, decoded_word);
 }
 
-double_mtx_t * calc_ber(simulation_params_t *simulation_params);
 char* get_poly_for_n_k(int n, int k);
+double_mtx_t * calc_ber(simulation_params_t *simulation_params);
 
 int main(int argc, char ** argv) {
 	if (argc < 9) {
@@ -149,6 +146,7 @@ char* get_poly_for_n_k(int n, int k) {
 
 double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 {
+	extern clock_t time_in_gussian_elimination;
 	int_mtx_t *G;
 	int N;
 	double start_EBN0_db, end_EBN0_db, EBN0_delta;
@@ -160,7 +158,6 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 	int max_word_errors;
 
 	clock_t t_clk, sum_clk;
-	//time_t t_clk, sum_clk;
 
 	double_mtx_t *ber;
 	gf2_vec_t *info, *symb, *dec_symb;
@@ -176,7 +173,7 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 	length = ((end_EBN0_db - start_EBN0_db) / EBN0_delta) + 1;
 	ber = (double_mtx_t *)ecc_malloc(sizeof(double_mtx_t));
 	// Note there are 3 values allocated for each SNR value: The SNR value itself, the BER using the given code, and the BER when transmitting uncoded data
-	init_double_mtx(ber, 5, length);
+	init_double_mtx(ber, 6, length);
 
 	malloc_and_init_gf2_vec(&info, G->m); // Vector that includes information bits
 	malloc_and_init_gf2_vec(&dec_symb, G->n); // Vector that includes decoded bits (after channel transmission and decoding)
@@ -197,6 +194,7 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 		word_errors = 0;
 		erf_n_errors_uc = erf_n_errors = 0;
 		sum_clk = 0;
+		time_in_gussian_elimination = 0;
 
 		// Simulate N codewords
 		for (iter = 0; iter<N && word_errors < max_word_errors; iter++) {
@@ -212,13 +210,9 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 			init_measured_data(symb, data, start_EBN0_db + EBN0_delta*i, ((double)(G->m) / (double)G->n)); // Transmission of the codeword
 			init_measured_data(info, data_uc, start_EBN0_db + EBN0_delta*i, 1.0); // Transmission of only the information bits
 
-			// print_gf2vec(symb);
 			t_clk = clock();
-			// time(&t_clk);
 			simulation_params->decode_func(data, dec_symb);
 			sum_clk += (clock() - t_clk);
-			// print_gf2vec(dec_symb);
-			//printf("iter num %d - after decode\n", iter);
 
 			// Now counting the number of error bits
 			// coded data
@@ -242,7 +236,8 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 		put_double_element(ber, 1, i, n_errors / (double)(iter * G->n));
 		put_double_element(ber, 2, i, word_errors / (double)(iter));
 		put_double_element(ber, 3, i, sum_clk / CLOCKS_PER_SEC / (double)(iter));
-		put_double_element(ber, 4, i, n_errors_uc / (double)(iter * G->m));
+		put_double_element(ber, 4, i, time_in_gussian_elimination / CLOCKS_PER_SEC / (double)(iter));
+		put_double_element(ber, 5, i, n_errors_uc / (double)(iter * G->m));
 	}
 
 	free_gf2_vec(info);
@@ -252,7 +247,8 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 	free_real_vec(data_uc);
 
 	// Printing the BER matrix
+	printf("Resutls are in the format of:\n|SNR|\n|BER|\n|WER|\n|Time per word|\n|Time in gaussian elimination per word|\n|Uncoded BER|\n");
 	print_double_mtx(ber);
-	dump_double_mtx_text(ber, "BER.txt");
+	dump_double_mtx_text(ber, "Simulation Results.txt");
 	return ber;
 }

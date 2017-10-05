@@ -17,7 +17,7 @@ FLAGS += -DBERSIM=0
 endif
 
 
-OBJ = main.o OSDDecoder.o math_funcs.o gf2_algebra.o ecc.o scc.o ldpc_class.o timer.o
+OBJ = main.o OSDDecoder.o math_funcs.o gf2_algebra.o ecc.o
 
 all: main
 
@@ -32,13 +32,7 @@ math_funcs.o: math_funcs.c math_funcs.h ecc_c_headers.h ecc.h
 
 gf2_algebra.o : gf2_algebra.c gf2_algebra.h math_funcs.h
 
-ecc.o: ecc.c ecc.h scc.h
-
-scc.o: scc.c ecc.h scc.h
-
-ldpc_class.o: ldpc_class.cpp ldpc_class.h ldpc_simulator_data_def.h ecc.h
-
-timer.o: timer.h timer.cpp
+ecc.o: ecc.c ecc.h
 
 .c.o:
 	$(CC) -c $(FLAGS) $< -o $@
