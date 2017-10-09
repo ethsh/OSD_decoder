@@ -35,6 +35,7 @@ static void dump_double_mtx_text(double_mtx_t *mtx, char *fname)
 		}
 		fprintf(fp, "|\n");
 	}
+	fflush(fp);
 
 	fclose(fp);
 }
