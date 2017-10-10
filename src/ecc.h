@@ -7,7 +7,10 @@
 #include <math.h>
 
 #ifdef _WIN32
-#define ecc_assert(cond, msg, a, ...) assert((cond))
+#define ecc_assert(cond, msg, a, ...) 1 //assert((cond))
+#else
+#if 1
+#define ecc_assert(cond,msg,a...) 1
 #else
 #define ecc_assert(cond,msg,a...)							\
         do {										\
@@ -20,6 +23,7 @@
                 }									\
         } while (0)
 #endif
+#endif
 
 //static __inline void *ecc_malloc_err(int size, char* file, int line)
 // Never put non-static function definitions in a header file! either make the function
@@ -31,7 +35,6 @@ static void *ecc_malloc_err(int size, const char* file, int line)
         p = malloc(size);
         ecc_assert(p != NULL, "unable to allocate %d bytes, out of memory, file %s, line %d\n", size, file, line);
         memset(p,0,(int) size);
-
         return p;
 }
 
