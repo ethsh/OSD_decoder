@@ -365,7 +365,11 @@ void osd_perform_decoding_for_single_order(osd_decoder_t* osd_decoder, int order
 	int n = osd_decoder->n, k = osd_decoder->k;
 
 	// TEST
-	double* tmp_soft_ptr = osd_decoder->curr_soft_symb_perm->data;
+	double* tmp_abs_soft_ptr = osd_decoder->curr_soft_symb_perm->data;
+	for (size_t i = 0; i < osd_decoder->curr_soft_symb_perm->n; i++)
+	{
+		tmp_abs_soft_ptr[i] = fabs(tmp_abs_soft_ptr[i]);
+	}
 	double curr_best_error = 1e10;
 
 	int_vec_t *temp_error_pattern = NULL;
@@ -387,33 +391,23 @@ void osd_perform_decoding_for_single_order(osd_decoder_t* osd_decoder, int order
 
 		add_gf2_bit_vec(temp_full_symbols, osd_decoder->curr_hard_syms_codeword_perm, error_locations_vec);
 
-		//for (size_t k = 0; k < n; k++)
-		//{
-		//	if (0 != gf2_bit_vec_get_element(error_locations_vec, k)) {
-		//		//temp_error_distance += fabs(osd_decoder->curr_soft_symb_perm->data[k]);
-		//		temp_error_distance += fabs(tmp_soft_ptr[k]);
-		//	}
-		//}
-
 		for (size_t j = 0; j < temp_error_pattern->n; j++)
 		{
-			temp_error_distance += fabs(tmp_soft_ptr[temp_error_pattern->data[j]]);
+			temp_error_distance += tmp_abs_soft_ptr[temp_error_pattern->data[j]];
 		}
 
 		curr_best_error = *out_best_error_distance;
 
 		for (size_t l = k; l < n; l++)
 		{
+			
 			if (0 != gf2_bit_vec_get_element(error_locations_vec, l)) {
-				//temp_error_distance += fabs(osd_decoder->curr_soft_symb_perm->data[k]);
-				temp_error_distance += fabs(tmp_soft_ptr[l]);
+				temp_error_distance += tmp_abs_soft_ptr[l];
 				if (temp_error_distance > curr_best_error) {
 					break;
 				}
 			}
 		}
-
-
 
 		if (temp_error_distance < *out_best_error_distance) {
 			*out_best_error_distance = temp_error_distance;
