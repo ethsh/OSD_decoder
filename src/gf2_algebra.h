@@ -12,6 +12,9 @@ typedef struct gf2_bit_vec_s {
 	int n;
 	int n_char;
 	char *data;
+
+	int n_int;
+	int n_remain_start;
 } gf2_bit_vec_t;
 
 typedef struct gf2_bit_mtx_s {
