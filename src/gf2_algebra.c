@@ -13,8 +13,10 @@ void malloc_and_init_gf2_bit_vec(gf2_bit_vec_t** dst, int len) {
 }
 void init_gf2_bit_vec(gf2_bit_vec_t* vec, int len) {
 	vec->n = len;
-	vec->n_char = len / WORD_SIZE + (len / WORD_SIZE == 0 ? 0 : 1);
+	vec->n_char = len / WORD_SIZE + (len % WORD_SIZE == 0 ? 0 : 1);
 	vec->data = (char*)ecc_malloc(vec->n_char * sizeof(char));
+	vec->n_int = vec->n_char / sizeof(int);
+	vec->n_remain_start = vec->n_int * sizeof(int);
 }
 
 void copy_gf2_bit_vec(gf2_bit_vec_t* src, gf2_bit_vec_t* dst) {
@@ -44,20 +46,23 @@ void free_gf2_bit_vec(gf2_bit_vec_t* vec) {
 void add_gf2_bit_vec(gf2_bit_vec_t* src1, gf2_bit_vec_t* src2, gf2_bit_vec_t* dst) {
 	ecc_assert(src1->n == src2->n, "in %s, src1 and 2 vecs in different sizes", __FUNCTION__);
 	ecc_assert(src1->n == dst->n, "in %s, src1 and dst vecs in different sizes", __FUNCTION__);
+
 	/*for (size_t i = 0; i < src1->n_char; i++)
 	{
 		dst->data[i] = src1->data[i] ^ src2->data[i];
 	}*/
 	size_t i;
-	int n_char = src1->n_char;
-	int n_int = n_char / sizeof(int);
-	int n_remain_start = n_int * sizeof(int);
+	//int n_char = src1->n_char;
+	//int n_int = n_char / sizeof(int);
+	//int n_remain_start = n_int * sizeof(int);
 	int *dst_data_int = (int*)dst->data, *src1_data_int = (int*)src1->data, *src2_data_int = (int*)src2->data;
+	int n_int = src1->n_int;
+	int n_char = src1->n_char;
 	for (i = 0; i < n_int; i++)
 	{
 		dst_data_int[i] = src1_data_int[i] ^ src2_data_int[i];
 	}
-	for (i = n_remain_start; i < n_char; i++)
+	for (i = src1->n_remain_start; i < n_char; i++)
 	{
 		dst->data[i] = src1->data[i] ^ src2->data[i];
 	}

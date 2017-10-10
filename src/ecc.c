@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 #include "ecc.h"
 
 #define sqr(x) ((x)*(x))
@@ -2025,7 +2026,8 @@ void generate_ieq_file(int_mtx_t *H, char* fname){
 	char tmp[10];
 	int *indices, sum;
 
-	ecc_assert(fp = fopen(fname, "wt"), "can't open file %s for output\n", fname);
+	fp = fopen(fname, "wt");
+	ecc_assert(fp, "can't open file %s for output\n", fname);
 
 	indices = (int*)malloc(sizeof(int)*H->n);
 

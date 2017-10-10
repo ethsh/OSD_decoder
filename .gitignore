@@ -63,3 +63,7 @@ dkms.conf
 *.vcxproj
 *.filters
 
+*.user
+*.iobj
+*.ipdb
+*.vspx
