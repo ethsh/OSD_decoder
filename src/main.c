@@ -28,10 +28,10 @@ static void dump_double_mtx_text(double_mtx_t *mtx, char *fname)
 	if (!(fp = fopen(fname, "w")))
 		ecc_assert(0, "couldnt open %s for dumping", fname);
 	
-	for (i = 0; i < mtx->n; i++) {
+	for (i = 0; i < mtx->m; i++) {
 		fprintf(fp, "|\t");
-		for (j = 0; j < mtx->m; j++) {
-			fprintf(fp, "%lf\t", mtx->data[i * mtx->m + j]);
+		for (j = 0; j < mtx->n; j++) {
+			fprintf(fp, "%12.6g\t", mtx->data[i * mtx->n + j]);
 		}
 		fprintf(fp, "|\n");
 	}
@@ -174,7 +174,7 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 	length = ((end_EBN0_db - start_EBN0_db) / EBN0_delta) + 1;
 	ber = (double_mtx_t *)ecc_malloc(sizeof(double_mtx_t));
 	// Note there are 3 values allocated for each SNR value: The SNR value itself, the BER using the given code, and the BER when transmitting uncoded data
-	init_double_mtx(ber, 6, length);
+	init_double_mtx(ber, 5, length);
 
 	malloc_and_init_gf2_vec(&info, G->m); // Vector that includes information bits
 	malloc_and_init_gf2_vec(&dec_symb, G->n); // Vector that includes decoded bits (after channel transmission and decoding)
@@ -238,7 +238,7 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 		put_double_element(ber, 2, i, word_errors / (double)(iter));
 		put_double_element(ber, 3, i, sum_clk / CLOCKS_PER_SEC / (double)(iter));
 		put_double_element(ber, 4, i, time_in_gussian_elimination / CLOCKS_PER_SEC / (double)(iter));
-		put_double_element(ber, 5, i, n_errors_uc / (double)(iter * G->m));
+		// put_double_element(ber, 5, i, n_errors_uc / (double)(iter * G->m));
 	}
 
 	free_gf2_vec(info);
@@ -248,7 +248,7 @@ double_mtx_t * calc_ber(simulation_params_t *simulation_params)
 	free_real_vec(data_uc);
 
 	// Printing the BER matrix
-	printf("Resutls are in the format of:\n|SNR|\n|BER|\n|WER|\n|Time per word|\n|Time in gaussian elimination per word|\n|Uncoded BER|\n");
+	printf("Resutls are in the format of:\n|SNR|\n|BER|\n|WER|\n|Time per word|\n|Time in gaussian elimination per word|\n");
 	print_double_mtx(ber);
 	dump_double_mtx_text(ber, "Simulation Results.txt");
 	return ber;
